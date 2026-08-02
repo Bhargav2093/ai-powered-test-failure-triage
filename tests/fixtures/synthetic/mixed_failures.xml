@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Hand-crafted synthetic fixture: covers flaky (2 similar failures that should
+     cluster together), infra, and a second regression example, since the real
+     framework-repo fixture only naturally produces one regression case. -->
+<testsuite hostname="synthetic-ci-runner" failures="4" tests="4" name="com.example.tests.SyntheticSuite" time="12.4" errors="0" timestamp="2026-08-02T10:00:00 UTC" skipped="0">
+  <testcase classname="com.example.tests.LoginTests" name="loginButtonClickable" time="5.021">
+    <failure message="element click intercepted: Element is not clickable at point (120, 340)" type="org.openqa.selenium.ElementClickInterceptedException">
+      <![CDATA[org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element is not clickable at point (120, 340)
+	at org.openqa.selenium.remote.RemoteWebElement.click(RemoteWebElement.java:81)
+	at com.example.pages.LoginPage.clickLogin(LoginPage.java:44)
+	at com.example.tests.LoginTests.loginButtonClickable(LoginTests.java:22)
+]]>
+    </failure>
+  </testcase>
+  <testcase classname="com.example.tests.CheckoutTests" name="submitButtonStaleAfterReload" time="4.887">
+    <failure message="stale element reference: element is not attached to the page document" type="org.openqa.selenium.StaleElementReferenceException">
+      <![CDATA[org.openqa.selenium.StaleElementReferenceException: stale element reference: element is not attached to the page document
+	at org.openqa.selenium.remote.RemoteWebElement.click(RemoteWebElement.java:81)
+	at com.example.pages.CheckoutPage.clickSubmit(CheckoutPage.java:67)
+	at com.example.tests.CheckoutTests.submitButtonStaleAfterReload(CheckoutTests.java:31)
+]]>
+    </failure>
+  </testcase>
+  <testcase classname="com.example.tests.ApiHealthTests" name="pingInternalService" time="2.004">
+    <error message="Connection refused: connect" type="java.net.ConnectException">
+      <![CDATA[java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:945)
+	at com.example.api.InternalServiceClient.ping(InternalServiceClient.java:29)
+	at com.example.tests.ApiHealthTests.pingInternalService(ApiHealthTests.java:15)
+]]>
+    </error>
+  </testcase>
+  <testcase classname="com.example.tests.CartTests" name="cartTotalMatchesLineItems" time="0.512">
+    <failure message="expected [42.50] but found [39.99]" type="java.lang.AssertionError">
+      <![CDATA[java.lang.AssertionError: expected [42.50] but found [39.99]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.assertEquals(Assert.java:132)
+	at com.example.tests.CartTests.cartTotalMatchesLineItems(CartTests.java:53)
+]]>
+    </failure>
+  </testcase>
+</testsuite>
