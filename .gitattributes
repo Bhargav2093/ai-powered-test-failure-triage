@@ -1,0 +1,6 @@
+# Normalize to LF in the repo; Git checks out CRLF on Windows automatically when core.autocrlf=true.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jar binary
