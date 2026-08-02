@@ -8,6 +8,9 @@ node_modules/
 venv/
 __pycache__/
 *.pyc
+*.egg-info/
+.pytest_cache/
+triage-report.html
 .idea/
 *.iml
 .vscode/
