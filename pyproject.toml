@@ -1,0 +1,32 @@
+[project]
+name = "ai-test-failure-triage"
+version = "0.1.0"
+description = "AI-powered triage tool for failing test results: classifies, clusters, and suggests root causes."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "scikit-learn>=1.5",
+    "numpy>=1.26",
+    "anthropic>=0.40",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.14",
+]
+
+[project.scripts]
+triage = "triage.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
