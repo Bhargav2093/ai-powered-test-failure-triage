@@ -21,6 +21,8 @@ def _cluster() -> Cluster:
 class TestNarrateCluster:
     def test_no_api_key_falls_back_to_template(self, monkeypatch):
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
 
         result = narrate_cluster(_cluster())
 
@@ -29,6 +31,7 @@ class TestNarrateCluster:
 
     def test_template_mentions_cluster_size(self, monkeypatch):
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
         cluster = _cluster()
         cluster.members.append(cluster.members[0])
 
@@ -75,3 +78,85 @@ class TestNarrateCluster:
         result = narrate_cluster(_cluster(), client=fake_client)
 
         assert "infra" in result
+
+
+class TestNarrateClusterOpenAI:
+    def test_injected_openai_client_is_used_when_provided(self):
+        fake_message = MagicMock(content="Root cause: the internal health-check service was down.")
+        fake_choice = MagicMock(message=fake_message)
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = MagicMock(choices=[fake_choice])
+
+        result = narrate_cluster(_cluster(), openai_client=fake_client)
+
+        assert result == "Root cause: the internal health-check service was down."
+        fake_client.chat.completions.create.assert_called_once()
+
+    def test_injected_openai_client_uses_default_model(self):
+        fake_choice = MagicMock(message=MagicMock(content="narrative"))
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = MagicMock(choices=[fake_choice])
+
+        narrate_cluster(_cluster(), openai_client=fake_client)
+
+        _, kwargs = fake_client.chat.completions.create.call_args
+        assert kwargs["model"] == "gpt-4o-mini"
+
+    def test_openai_model_override_via_env_var(self, monkeypatch):
+        monkeypatch.setenv("OPENAI_MODEL", "gpt-4.1")
+        fake_choice = MagicMock(message=MagicMock(content="narrative"))
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = MagicMock(choices=[fake_choice])
+
+        narrate_cluster(_cluster(), openai_client=fake_client)
+
+        _, kwargs = fake_client.chat.completions.create.call_args
+        assert kwargs["model"] == "gpt-4.1"
+
+    def test_openai_api_error_degrades_to_template_instead_of_raising(self):
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.side_effect = RuntimeError("network down")
+
+        result = narrate_cluster(_cluster(), openai_client=fake_client)
+
+        assert "infra" in result
+
+    def test_empty_choices_falls_back_to_template(self):
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = MagicMock(choices=[])
+
+        result = narrate_cluster(_cluster(), openai_client=fake_client)
+
+        assert "infra" in result
+
+
+class TestProviderSelection:
+    def test_openai_key_alone_selects_openai_provider(self, monkeypatch):
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-fake")
+        monkeypatch.setattr("triage.llm._narrate_openai", lambda cluster: "openai-path")
+
+        result = narrate_cluster(_cluster())
+
+        assert result == "openai-path"
+
+    def test_both_keys_set_prefers_anthropic_by_default(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-fake")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-fake")
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
+        monkeypatch.setattr("triage.llm._narrate_anthropic", lambda cluster: "anthropic-path")
+
+        result = narrate_cluster(_cluster())
+
+        assert result == "anthropic-path"
+
+    def test_forced_provider_env_var_overrides_key_precedence(self, monkeypatch):
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-fake")
+        monkeypatch.setenv("OPENAI_API_KEY", "sk-fake")
+        monkeypatch.setenv("LLM_PROVIDER", "openai")
+        monkeypatch.setattr("triage.llm._narrate_openai", lambda cluster: "openai-path")
+
+        result = narrate_cluster(_cluster())
+
+        assert result == "openai-path"
