@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Test Failure Triage Report</title>
+<style>
+  body { font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif; margin: 2rem; color: #1a1a1a; background: #fafafa; }
+  h1 { margin-bottom: 0.25rem; }
+  .generated { color: #666; font-size: 0.85rem; margin-bottom: 1.5rem; }
+  .summary { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .summary-card { background: white; border-radius: 8px; padding: 1rem 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-width: 140px; }
+  .summary-card .count { font-size: 1.8rem; font-weight: 700; }
+  .summary-card .label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 0.03em; }
+  .cluster { background: white; border-radius: 8px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 5px solid #999; }
+  .cluster.flaky { border-left-color: #d9a441; }
+  .cluster.infra { border-left-color: #a44141; }
+  .cluster.regression { border-left-color: #4169a4; }
+  .cluster-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: white; }
+  .badge.flaky { background: #d9a441; }
+  .badge.infra { background: #a44141; }
+  .badge.regression { background: #4169a4; }
+  .confidence { color: #666; font-size: 0.8rem; }
+  .narrative { margin: 0.75rem 0; line-height: 1.5; }
+  .affected { font-size: 0.85rem; color: #333; }
+  .affected code { background: #f0f0f0; padding: 0.1rem 0.3rem; border-radius: 4px; }
+  .trace { background: #1e1e1e; color: #d4d4d4; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.78rem; overflow-x: auto; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h1>Test Failure Triage Report</h1>
+<div class="generated">Generated 2026-08-18 10:17 UTC - 5 failure(s) in 3 cluster(s)</div>
+
+<div class="summary">
+  
+  <div class="summary-card">
+    <div class="count">2</div>
+    <div class="label">flaky</div>
+  </div>
+  
+  <div class="summary-card">
+    <div class="count">2</div>
+    <div class="label">regression</div>
+  </div>
+  
+  <div class="summary-card">
+    <div class="count">1</div>
+    <div class="label">infra</div>
+  </div>
+  
+</div>
+
+
+<div class="cluster regression">
+  <div class="cluster-header">
+    <span class="badge regression">regression</span>
+    <span class="confidence">confidence: medium</span>
+  </div>
+  <p class="narrative">2 tests failed with a matching regression signature (representative: com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema - expected [999] but found [1]). No known flaky/infra signal matched - treat as a genuine candidate regression until a human rules it out.</p>
+  <p class="affected"><strong>2 test(s):</strong>
+    <code>com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema</code>, <code>com.example.tests.CartTests.cartTotalMatchesLineItems</code>
+  </p>
+  <details>
+    <summary>Representative stack trace (com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema)</summary>
+    <pre class="trace">java.lang.AssertionError: expected [999] but found [1]
+at org.testng.Assert.fail(Assert.java:111)
+at org.testng.Assert.failNotEquals(Assert.java:1578)
+at org.testng.Assert.assertEqualsImpl(Assert.java:150)
+at org.testng.Assert.assertEquals(Assert.java:132)
+at org.testng.Assert.assertEquals(Assert.java:1419)
+at org.testng.Assert.assertEquals(Assert.java:1383)
+at org.testng.Assert.assertEquals(Assert.java:1429)
+at com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema(PostsApiTests.java:35)
+at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+at org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)
+at org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)
+at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)
+at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)
+at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+at org.testng.TestRunner.privateRun(TestRunner.java:739)
+at org.testng.TestRunner.run(TestRunner.java:614)
+at org.testng.SuiteRunner.runTest(SuiteRunner.java:421)
+at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)
+at org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)
+at org.testng.SuiteRunner.run(SuiteRunner.java:312)
+at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)
+at org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)
+at org.testng.TestNG.runSuitesLocally(TestNG.java:1208)
+at org.testng.TestNG.runSuites(TestNG.java:1112)
+at org.testng.TestNG.run(TestNG.java:1079)
+at org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:308)
+at org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:71)
+at org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:113)
+at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)</pre>
+  </details>
+</div>
+
+<div class="cluster flaky">
+  <div class="cluster-header">
+    <span class="badge flaky">flaky</span>
+    <span class="confidence">confidence: medium</span>
+  </div>
+  <p class="narrative">2 tests failed with a matching flaky signature (representative: com.example.tests.LoginTests.loginButtonClickable - element click intercepted: Element is not clickable at point (120, 340)). Likely environment/timing-related rather than a real product defect - consider adding explicit waits or a retry policy before assuming a regression.</p>
+  <p class="affected"><strong>2 test(s):</strong>
+    <code>com.example.tests.LoginTests.loginButtonClickable</code>, <code>com.example.tests.CheckoutTests.submitButtonStaleAfterReload</code>
+  </p>
+  <details>
+    <summary>Representative stack trace (com.example.tests.LoginTests.loginButtonClickable)</summary>
+    <pre class="trace">org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element is not clickable at point (120, 340)
+	at org.openqa.selenium.remote.RemoteWebElement.click(RemoteWebElement.java:81)
+	at com.example.pages.LoginPage.clickLogin(LoginPage.java:44)
+	at com.example.tests.LoginTests.loginButtonClickable(LoginTests.java:22)</pre>
+  </details>
+</div>
+
+<div class="cluster infra">
+  <div class="cluster-header">
+    <span class="badge infra">infra</span>
+    <span class="confidence">confidence: high</span>
+  </div>
+  <p class="narrative">1 test failed with a matching infra signature (representative: com.example.tests.ApiHealthTests.pingInternalService - Connection refused: connect). Likely an environment/connectivity problem outside the application under test - check that dependent services and network access were available during this run.</p>
+  <p class="affected"><strong>1 test(s):</strong>
+    <code>com.example.tests.ApiHealthTests.pingInternalService</code>
+  </p>
+  <details>
+    <summary>Representative stack trace (com.example.tests.ApiHealthTests.pingInternalService)</summary>
+    <pre class="trace">java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:945)
+	at com.example.api.InternalServiceClient.ping(InternalServiceClient.java:29)
+	at com.example.tests.ApiHealthTests.pingInternalService(ApiHealthTests.java:15)</pre>
+  </details>
+</div>
+
+
+</body>
+</html>

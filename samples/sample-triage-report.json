@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-08-18 10:17 UTC",
+  "total_failures": 5,
+  "counts": {
+    "flaky": 2,
+    "regression": 2,
+    "infra": 1
+  },
+  "clusters": [
+    {
+      "category": "regression",
+      "confidence": "medium",
+      "size": 2,
+      "affected": [
+        "com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema",
+        "com.example.tests.CartTests.cartTotalMatchesLineItems"
+      ],
+      "representative_name": "com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema",
+      "representative_trace": "java.lang.AssertionError: expected [999] but found [1]\nat org.testng.Assert.fail(Assert.java:111)\nat org.testng.Assert.failNotEquals(Assert.java:1578)\nat org.testng.Assert.assertEqualsImpl(Assert.java:150)\nat org.testng.Assert.assertEquals(Assert.java:132)\nat org.testng.Assert.assertEquals(Assert.java:1419)\nat org.testng.Assert.assertEquals(Assert.java:1383)\nat org.testng.Assert.assertEquals(Assert.java:1429)\nat com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema(PostsApiTests.java:35)\nat java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)\nat java.base/java.lang.reflect.Method.invoke(Method.java:580)\nat org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)\nat org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)\nat org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)\nat org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)\nat org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)\nat org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)\nat org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)\nat org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)\nat java.base/java.util.ArrayList.forEach(ArrayList.java:1597)\nat org.testng.TestRunner.privateRun(TestRunner.java:739)\nat org.testng.TestRunner.run(TestRunner.java:614)\nat org.testng.SuiteRunner.runTest(SuiteRunner.java:421)\nat org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)\nat org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)\nat org.testng.SuiteRunner.run(SuiteRunner.java:312)\nat org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)\nat org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)\nat org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)\nat org.testng.TestNG.runSuitesLocally(TestNG.java:1208)\nat org.testng.TestNG.runSuites(TestNG.java:1112)\nat org.testng.TestNG.run(TestNG.java:1079)\nat org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:308)\nat org.apache.maven.surefire.testng.TestNGXmlTestSuite.execute(TestNGXmlTestSuite.java:71)\nat org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:113)\nat org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)\nat org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)\nat org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)\nat org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)",
+      "narrative": "2 tests failed with a matching regression signature (representative: com.automation.hybrid.tests.api.PostsApiTests.getSinglePostReturnsValidSchema - expected [999] but found [1]). No known flaky/infra signal matched - treat as a genuine candidate regression until a human rules it out."
+    },
+    {
+      "category": "flaky",
+      "confidence": "medium",
+      "size": 2,
+      "affected": [
+        "com.example.tests.LoginTests.loginButtonClickable",
+        "com.example.tests.CheckoutTests.submitButtonStaleAfterReload"
+      ],
+      "representative_name": "com.example.tests.LoginTests.loginButtonClickable",
+      "representative_trace": "org.openqa.selenium.ElementClickInterceptedException: element click intercepted: Element is not clickable at point (120, 340)\n\tat org.openqa.selenium.remote.RemoteWebElement.click(RemoteWebElement.java:81)\n\tat com.example.pages.LoginPage.clickLogin(LoginPage.java:44)\n\tat com.example.tests.LoginTests.loginButtonClickable(LoginTests.java:22)",
+      "narrative": "2 tests failed with a matching flaky signature (representative: com.example.tests.LoginTests.loginButtonClickable - element click intercepted: Element is not clickable at point (120, 340)). Likely environment/timing-related rather than a real product defect - consider adding explicit waits or a retry policy before assuming a regression."
+    },
+    {
+      "category": "infra",
+      "confidence": "high",
+      "size": 1,
+      "affected": [
+        "com.example.tests.ApiHealthTests.pingInternalService"
+      ],
+      "representative_name": "com.example.tests.ApiHealthTests.pingInternalService",
+      "representative_trace": "java.net.ConnectException: Connection refused: connect\n\tat java.base/sun.nio.ch.Net.pollConnect(Native Method)\n\tat java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)\n\tat java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:945)\n\tat com.example.api.InternalServiceClient.ping(InternalServiceClient.java:29)\n\tat com.example.tests.ApiHealthTests.pingInternalService(ApiHealthTests.java:15)",
+      "narrative": "1 test failed with a matching infra signature (representative: com.example.tests.ApiHealthTests.pingInternalService - Connection refused: connect). Likely an environment/connectivity problem outside the application under test - check that dependent services and network access were available during this run."
+    }
+  ]
+}
