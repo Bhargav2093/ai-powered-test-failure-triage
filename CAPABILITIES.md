@@ -43,21 +43,23 @@ proven against that real data before being trusted.
   (default `0.6`, tunable via `--similarity-threshold`), so one root cause spanning many tests
   surfaces as one triage item instead of dozens of near-duplicate entries.
 
-## LLM root-cause narrator (optional, graceful degradation)
+## LLM root-cause narrator (optional, pluggable provider, graceful degradation)
 
 - **The deterministic core never needs an API key.** Classification and clustering are 100%
   rule-based and offline; the LLM layer only adds a nicer, human-readable narrative on top of a
   result that's already fully computed.
-- `ANTHROPIC_API_KEY` unset → `narrate_cluster()` returns a clear template-based summary — same
-  return type, same call site, zero network calls, zero cost.
-- `ANTHROPIC_API_KEY` set → a real request to `claude-opus-5` (overridable via `CLAUDE_MODEL`)
-  generates a 2–4 sentence root-cause narrative from the cluster's signature, category, and a
-  representative stack trace.
+- Neither key set → `narrate_cluster()` returns a clear template-based summary — same return
+  type, same call site, zero network calls, zero cost.
+- `ANTHROPIC_API_KEY` set → a real request to `claude-opus-5` (overridable via `CLAUDE_MODEL`).
+- `OPENAI_API_KEY` set → the same narrative from an OpenAI chat model, `gpt-4o-mini` by default
+  (overridable via `OPENAI_MODEL`) — no single-vendor lock-in, and switching provider is a
+  one-env-var change. `LLM_PROVIDER=anthropic|openai` forces the choice explicitly if both keys
+  are set.
 - **Any API failure degrades to the same template** rather than crashing the triage run — a rate
-  limit, bad key, or network blip never takes down the whole tool.
-- Tested via a mocked Anthropic client for both the success path and the failure-degrades-gracefully
-  path, so the full test suite proves the behavior without ever needing a real key or network
-  access.
+  limit, bad key, or network blip never takes down the whole tool, on either provider.
+- Tested via mocked clients for **both** providers, for both the success path and the
+  failure-degrades-gracefully path, plus explicit tests for provider-selection precedence — the
+  full test suite proves the behavior without ever needing a real key or network access.
 
 ## Reporting
 
@@ -79,7 +81,7 @@ than erroring on an empty input.
 
 ## Testing
 
-**34 tests**, covering:
+**42 tests**, covering:
 
 - Both parsers against the real captured framework-repo fixture and hand-written synthetic
   fixtures covering flaky/infra/regression variety in one file.
@@ -87,16 +89,19 @@ than erroring on an empty input.
   safe-default behavior.
 - Clustering's category-boundary rule, similarity threshold behavior, and the invariant that every
   input failure ends up in exactly one output cluster.
-- The LLM narrator's no-key template path, mocked-client real-call path, model-override-via-env-var
-  behavior, and API-failure-degrades-gracefully path.
+- The LLM narrator's no-key template path, mocked-client real-call path, and
+  model-override-via-env-var behavior for **both** the Anthropic and OpenAI providers, the
+  API-failure-degrades-gracefully path on each, and provider-selection precedence
+  (`LLM_PROVIDER`, both-keys-set behavior).
 - All three report formats' actual rendered output (not just "didn't throw").
 - The CLI end-to-end: JUnit input, Allure input, all three output formats, and the empty-input
   case.
 
-**Verified reproducible, not just "tests pass here":** the full suite was re-run from a
+**Verified reproducible, not just "tests pass here":** the full suite has been re-run from a
 completely fresh `git clone` into a scratch directory with a brand-new virtual environment (no
-reused state from development) — 34/34 passed. It was also run through the exact PowerShell +
-`Activate.ps1` flow a real user would follow, not just via a Python interpreter invoked directly.
+reused state from development), and separately through the exact PowerShell + `Activate.ps1`
+flow a real user would follow, not just via a Python interpreter invoked directly. Current suite
+size: 42/42 passing (`pip install -e ".[dev]" && pytest -v` from this repo).
 
 ## CI/CD
 
@@ -104,8 +109,9 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every push/PR to `develop`:
 
 1. Installs the package with dev dependencies (`pip install -e ".[dev]"`) — proves the package
    installs cleanly, not just that the source directory happens to work.
-2. Runs the full pytest suite — deliberately **without** `ANTHROPIC_API_KEY` set, proving the tool
-   works with zero API cost, matching how it's designed to run anywhere out of the box.
+2. Runs the full pytest suite — deliberately **without** `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`
+   set, proving the tool works with zero API cost, matching how it's designed to run anywhere
+   out of the box.
 3. Runs a real CLI smoke test against the bundled fixtures and prints the resulting JSON report.
 
 ## Project engineering
@@ -130,4 +136,5 @@ native run matching exactly how a user on this platform would invoke the tool. S
 ## Tech stack
 
 Python 3.11+ · `src/` layout · scikit-learn (`TfidfVectorizer`, cosine similarity) · Jinja2 ·
-Anthropic SDK (`claude-opus-5`) · pytest + pytest-mock · GitHub Actions
+Anthropic SDK (`claude-opus-5`) · OpenAI SDK (`gpt-4o-mini`) · pytest + pytest-mock ·
+GitHub Actions
