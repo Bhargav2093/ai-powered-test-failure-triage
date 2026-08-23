@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/Bhargav2093/ai-powered-test-failure-triage/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/Bhargav2093/ai-powered-test-failure-triage/actions/workflows/ci.yml)
 
+> Part of the [Quality Engineering Reference Architecture](https://github.com/Bhargav2093/quality-engineering-reference-architecture) — implements the [AI Quality Intelligence](https://github.com/Bhargav2093/quality-engineering-reference-architecture/blob/develop/docs/ai-quality-intelligence.md) pillar.
+
 Ingests failing test output from JUnit-style XML (Maven Surefire, TestNG, pytest `--junitxml`)
 and Allure `*-result.json` files, then automatically:
 
